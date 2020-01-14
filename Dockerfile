@@ -1,8 +1,14 @@
 FROM php:7.2-apache
-RUN apt-get update && apt-get install zip git -y
+RUN apt-get update \
+ && apt-get -y install zip unzip git zlib1g-dev libmemcached-dev
 
-#RUN pecl install memcached-3.1.5
-RUN pecl install xdebug-2.9.0 \
+RUN git clone -b php7 https://github.com/php-memcached-dev/php-memcached /usr/src/php/ext/memcached \
+    && docker-php-ext-configure /usr/src/php/ext/memcached \
+        --disable-memcached-sasl \
+    && docker-php-ext-install /usr/src/php/ext/memcached \
+    && rm -rf /usr/src/php/ext/memcached
+
+RUN pecl install xdebug \
  && docker-php-ext-enable xdebug
 
 RUN cd /tmp \
